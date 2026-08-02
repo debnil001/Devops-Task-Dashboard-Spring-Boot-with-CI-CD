@@ -1,0 +1,38 @@
+name: CI Pipeline
+
+on:
+    push:
+        branches:
+        - main
+    pull_request:
+        branches:
+        - main
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Setup Java
+              uses: actions/setup-java@v4
+              with:
+                distribution: temurin
+                java-version: '21'
+            
+            - name: Cache Maven
+              uses: actions/cache@v4
+              with:
+                path: ~/.m2
+                key: maven-${{ hashFiles('**/pom.xml') }}
+            
+            - name: Build Project
+              run: ./mvnw clean package -DskipTests
+            
+            - name: Upload Artifact
+              uses: actions/upload-artifact@v4
+              with:
+                name: sprinboot-jar
+                path: target/*.jar
