@@ -10,31 +10,27 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
-
         steps:
-
             - name: Checkout Repository
               uses: actions/checkout@v4
 
-            - name: Setup Java
-              uses: actions/setup-java@v4
+            - name: Trivy filesystem scan
+              uses: aquasecurity/trivy-action@0.28.0  
               with:
-                distribution: temurin
-                java-version: '21'
-            
-            - name: Cache Maven
-              uses: actions/cache@v4
+                scan-type: fs
+                scan-ref: .
+                format: table
+                severity: HIGH,CRITICAL
+                exit-code: '0'
+
+            - name: Build Docker Image
+              run: |
+                docker build -t task-dashboard:latest .
+
+            - name: Trivy Image Scan
+              uses: aquasecurity/trivy-action@0.28.0
               with:
-                path: ~/.m2
-                key: maven-${{ hashFiles('**/pom.xml') }}
-            - name: Grant execute permission to Maven Wrapper
-              run: chmod +x mvnw
-            
-            - name: Build Project
-              run: ./mvnw clean package -DskipTests
-            
-            - name: Upload Artifact
-              uses: actions/upload-artifact@v4
-              with:
-                name: sprinboot-jar
-                path: target/*.jar
+                image-ref: task-dashboard:latest
+                format: table
+                severity: HIGH,CRITICAL
+                exit-code: '0'
