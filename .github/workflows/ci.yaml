@@ -31,7 +31,7 @@ jobs:
                 .
 
             - name: Login to Docker hub
-              uses: docker/login-active@v3
+              uses: docker/login-action@v3
               with:
                 username: ${{secrets.DOCKERHUB_USERNAME}}
                 password: ${{secrets.DOCKERHUB_PASSWORD}}
