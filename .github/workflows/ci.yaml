@@ -25,7 +25,20 @@ jobs:
 
             - name: Build Docker Image
               run: |
-                docker build -t task-dashboard:latest .
+                docker build \
+                -t ${{secrets.DOCKERHUB_USERNAME}}/task-dashboard:latest \
+                -t ${{secrets.DOCKERHUB_USERNAME}}/task-dashboard:${{github.sha}} \
+                .
+
+            - name: Login to Docker hub
+              uses: docker/login-active@v3
+              with:
+                username: ${{secrets.DOCKERHUB_USERNAME}}
+                password: ${{secrets.DOCKERHUB_PASSWORD}}
+            
+            - name: Push latest and SHA tagged Image
+              run: |
+                docker push ${{secrets.DOCKERHUB_USERNAME}}/task-dashboard:${{github.sha}}
 
             - name: Trivy Image Scan
               uses: aquasecurity/trivy-action@0.35.0
