@@ -40,7 +40,8 @@ jobs:
               run: |
                 docker push ${{secrets.DOCKERHUB_USERNAME}}/task-dashboard:${{github.sha}} ${{secrets.DOCKERHUB_USERNAME}}/task-dashboard:${{github.sha}}
 
-
+            - name: demo step
+              run: uname
             - name: Trivy Image Scan
               uses: aquasecurity/trivy-action@0.35.0
               with:
