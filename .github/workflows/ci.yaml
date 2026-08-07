@@ -38,7 +38,8 @@ jobs:
             
             - name: Push latest and SHA tagged Image
               run: |
-                docker push ${{secrets.DOCKERHUB_USERNAME}}/task-dashboard:${{github.sha}} ${{secrets.DOCKERHUB_USERNAME}}/task-dashboard:${{github.sha}}
+                docker push ${{secrets.DOCKERHUB_USERNAME}}/task-dashboard:latest 
+                docker push ${{secrets.DOCKERHUB_USERNAME}}/task-dashboard:${{github.sha}}
 
             - name: Trivy Image Scan
               uses: aquasecurity/trivy-action@0.35.0
