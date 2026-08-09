@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: task-dashborad-config
+  nampespace: task-dashborad
+data:
+  SPRING_DATASOURCE_URL: "jdbc:mysql://"
+  SPRING_DATASOURCE_USERNAME: "taskuser"

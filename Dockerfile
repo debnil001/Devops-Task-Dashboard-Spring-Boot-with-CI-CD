@@ -12,6 +12,7 @@ RUN chmod +x mvnw
 
 RUN ./mvnw clean package -DskipTests
 
+
 # ==================================================
 # Stage 2 - Runtime
 # ==================================================
@@ -22,19 +23,17 @@ LABEL maintainer="Debnil Sarkar"
 
 WORKDIR /app
 
-# Create non-root user
-RUN addgroup --system spring && \
-    adduser --system spring --ingroup spring
+# Create a dedicated non-root user with a fixed UID
+RUN groupadd --system --gid 10001 spring && \
+    useradd --system --uid 10001 --gid 10001 spring
 
 COPY --from=builder /app/target/*.jar app.jar
 
-RUN chown spring:spring app.jar
+RUN chown 10001:10001 app.jar
 
-USER spring
+# Run application as numeric non-root UID
+USER 10001:10001
 
 EXPOSE 8080
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
-#this is comment
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

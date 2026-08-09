@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: task-dashborad
+  namespace: task-dashborad
+
+spec:
+  type: ClusterIP
+
+  selector:
+    app: task-dashborad
+
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080

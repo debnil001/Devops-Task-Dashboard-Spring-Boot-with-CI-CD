@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-dashborad
+  namespace: task-dashborad
+
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: task-dashborad
+  template:
+    metadata:
+      labels:
+        app: task-dashborad
+    spec:
+      containers:
+      - name: task-dashborad
+        image: debnildocker/task-dashboard:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: task-dashborad-config
+        - secretRef:
+            name: task-dashborad-secret
+        resources:
+
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+        startupProbe:
+
+            httpGet:
+              path: /actuator/health
+              port: 8080
+
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 12
+
+        readinessProbe:
+
+            httpGet:
+              path: /actuator/health
+              port: 8080
+
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+        livenessProbe:
+
+            httpGet:
+              path: /actuator/health
+              port: 8080
+
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+        securityContext:
+
+            allowPrivilegeEscalation: false
+
+            runAsNonRoot: true
+
+            capabilities:
+              drop:
+                - ALL
